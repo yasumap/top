@@ -14,9 +14,7 @@
 
 body {
   min-height: 100vh;
-  background: radial-gradient(circle at 20% 20%, #ffb67f 0%, transparent 28%),
-    radial-gradient(circle at 82% 10%, #ffd9a0 0%, transparent 25%),
-    linear-gradient(180deg, #2b1b3a 0%, #4a2958 40%, #f08a6a 100%);
+  background-color: #0f0a1d;
   color: var(--foreground);
   font-family: var(--font-zen-maru), "Hiragino Sans", "Noto Sans JP",
     "Helvetica Neue", Arial, sans-serif;

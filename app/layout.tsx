@@ -15,13 +15,16 @@ const geistMono = Geist_Mono({
 const zenMaru = Zen_Maru_Gothic({
   variable: "--font-zen-maru",
   weight: ["400", "500", "700"],
-  subsets: ["latin", "latin-ext"],
+  subsets: ["latin", "latin-ext", "japanese"],
 });
 
 export const metadata: Metadata = {
-  title: "やすまっぷ | 夕暮れの街に、ひと息を",
+  title: "やすまっぷ | 街に、ひと息を",
   description:
-    "街のどこかで少しだけ座れる場所をそっと示す、やすまっぷ。無料で広がる、夕暮れの街角のような取り組みです。",
+    "街のどこかで少しだけ座れる場所をそっと示す、やすまっぷ。無料で広がる、街の一部のような取り組みです。",
+  icons: {
+    icon: "/椅子_ファビコン用.png",
+  },
 };
 
 export default function RootLayout({

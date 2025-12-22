@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 
 type FadeInProps = {
@@ -26,6 +27,24 @@ const passages = [
   },
 ];
 
+const storySegments = [
+  "街を歩いているとき、「少しだけ座りたいな」と思う瞬間があります。",
+  "買い物帰りの重い荷物、久しぶりに履いた靴での靴擦れ、あるいはただ静かに風を感じたいとき。",
+  "そんなとき、今の街で座ろうとすると、選択肢は限られています。",
+  "例えば、カフェに入れば一杯500円。私たち大学生にとって、その500円は一食分のランチ代と同じくらいの重みがあります。",
+  "ほんの数分だけ腰を下ろしたいだけなのに、お金を払わないと居場所がない。そんな風に感じることも少なくありません。",
+  "この困りごとは、命に関わるような大きな問題ではないかもしれません。だからこそ、ずっと見過ごされ、放置されてきました。",
+  "私たちは、そんな「小さくて見過ごされがちな困りごと」を、テクノロジーで解決したいと思いました。",
+  "必要なときに、必要な人が迷わず一息つけるように。",
+  "このプロダクトを無料で提供しているのには、理由があります。道端のベンチが誰にでも開かれているのと同じように、このアプリも「街の公共物」でありたいからです。",
+  "困っている人から対価をもらうのではなく、学生もお年寄りも誰もが気兼ねなく使える「優しさ」の場所であり続けたいと考えています。",
+  "その代わり、もしこの活動に「いいな」と共感してくださる方がいたら、無理のない範囲で支えていただけないでしょうか。",
+  "皆さんからいただく1円は、単なる利用料ではありません。",
+  "「次はあそこにベンチを増やそう」「この街をもっと歩きやすくしよう」という、温かい社会を作るための応援のバトンです。",
+  "1円でも、それが大学生である私たちの活動を続ける大きな理由になります。",
+  "誰かがほんの少し笑顔になれる未来を、私たちと一緒に作っていきませんか。",
+];
+
 function FadeIn({ children, delay = 0 }: FadeInProps) {
   const [visible, setVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -34,9 +53,7 @@ function FadeIn({ children, delay = 0 }: FadeInProps) {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setVisible(true);
-          }
+          setVisible(entry.isIntersecting);
         });
       },
       { threshold: 0.35 }
@@ -53,7 +70,7 @@ function FadeIn({ children, delay = 0 }: FadeInProps) {
     <div
       ref={ref}
       style={{ transitionDelay: `${delay}ms` }}
-      className={`transition-all duration-1000 ease-out ${
+      className={`transition-all duration-700 ease-out ${
         visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
       }`}
     >
@@ -65,36 +82,40 @@ function FadeIn({ children, delay = 0 }: FadeInProps) {
 export default function Home() {
   return (
     <div className="relative min-h-screen overflow-hidden text-white">
-      <div className="absolute inset-0">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#2f1c3d]/80 via-[#f08a6a]/35 to-[#1a0f26]/90" />
-        <div className="absolute left-1/2 top-[-120px] h-96 w-96 -translate-x-1/2 rounded-full bg-[#ffd9a0]/30 blur-3xl" />
-        <div className="absolute left-8 top-36 h-48 w-48 rounded-full bg-[#f08a6a]/25 blur-3xl" />
-        <div className="absolute right-12 top-24 h-56 w-56 rounded-full bg-[#ffd1a1]/25 blur-3xl" />
+      <div className="absolute inset-0 -z-10">
+        <Image
+          src="/夕日のベンチ_LP用背景画像.png"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
+          style={{ objectPosition: "center bottom" }}
+        />
+        <div className="absolute inset-0 bg-black/12" />
       </div>
 
       <main className="relative flex min-h-screen flex-col">
         <section className="flex min-h-screen items-center px-6 py-16">
           <div className="relative mx-auto flex max-w-4xl flex-col items-center text-center">
             <div className="mb-10 inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/80 backdrop-blur">
-              <span>夕暮れの街に、ひと息を</span>
+              <span>街に、ひと息を</span>
               <span className="h-1 w-1 rounded-full bg-white/60" />
               <span>やすまっぷ</span>
             </div>
 
             <FadeIn>
-              <h1 className="text-4xl leading-[1.25] sm:text-5xl md:text-6xl">
-                夕焼けの街角に、やさしいベンチの地図を。
-              </h1>
-              <p className="mt-6 max-w-3xl text-lg leading-8 text-white/85 sm:text-xl">
-                福岡の街にそっと置かれた長椅子のように、だれかが少しだけ休める場所を灯していく。
-                広告より静かに、でも確かに届く「座れる目印」を描いていきます。
-              </p>
+              <div className="px-7 py-8">
+                <h1 className="text-4xl leading-[1.25] text-[#fffaf3] drop-shadow-[0_10px_24px_rgba(0,0,0,0.35)] sm:text-5xl md:text-6xl">
+                  <span className="block">街角に、やさしい</span>
+                  <span className="block">ベンチの地図を</span>
+                </h1>
+                <p className="mt-6 max-w-3xl text-lg leading-8 text-[#fff6eb] drop-shadow-[0_8px_22px_rgba(0,0,0,0.32)] sm:text-xl">
+                  福岡の街にそっと置かれた長椅子のように、だれかが少しだけ休める場所を灯していく。
+                  広告より静かに、でも確かに届く「座れる目印」を描いていきます。
+                </p>
+              </div>
             </FadeIn>
-
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-52">
-              <div className="absolute inset-x-8 bottom-6 h-24 rounded-[40px] bg-white/5 backdrop-blur-md" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#120b1e] via-[#1e132c]/80 to-transparent" />
-            </div>
           </div>
         </section>
 
@@ -102,7 +123,7 @@ export default function Home() {
           <div className="mx-auto flex max-w-3xl flex-col gap-8">
             {passages.map((item, index) => (
               <FadeIn key={item.title} delay={index * 120}>
-                <article className="space-y-3 rounded-3xl border border-white/10 bg-white/6 px-6 py-7 shadow-[0_20px_60px_rgba(0,0,0,0.25)] backdrop-blur">
+                <article className="space-y-3 rounded-3xl border border-white/10 bg-white/12 px-6 py-7 shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur">
                   <h2 className="text-xl font-semibold text-white">
                     {item.title}
                   </h2>
@@ -113,17 +134,15 @@ export default function Home() {
               </FadeIn>
             ))}
 
-            <FadeIn delay={passages.length * 140}>
-              <div className="mt-4 rounded-3xl border border-white/15 bg-gradient-to-r from-white/8 via-white/6 to-white/8 px-6 py-7 text-center backdrop-blur">
-                <p className="text-sm uppercase tracking-[0.25em] text-white/70">
-                  今は静かに準備中
-                </p>
-                <p className="mt-3 text-lg leading-8 text-white">
-                  地図づくりやベンチの整備状況は、少しずつお知らせしていきます。
-                  ひと息つきたくなったら、思い出してもらえると嬉しいです。
-                </p>
-              </div>
-            </FadeIn>
+            <div className="mt-6 space-y-5 text-lg leading-8 text-[#fff5e8] tracking-[0.01em]">
+              {storySegments.map((paragraph, idx) => (
+                <FadeIn key={idx} delay={passages.length * 140 + idx * 180}>
+                  <p className="drop-shadow-[0_12px_35px_rgba(0,0,0,0.35)]">
+                    {paragraph}
+                  </p>
+                </FadeIn>
+              ))}
+            </div>
           </div>
         </section>
 
@@ -134,7 +153,6 @@ export default function Home() {
               <span className="font-semibold text-white">やすまっぷ</span>
             </div>
             <div className="text-right leading-tight">
-              <p>福岡エンジニアカタパルト Phase4</p>
               <p className="text-white/65">現在開発中・準備中</p>
             </div>
           </div>
