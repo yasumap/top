@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 const zenMaru = Zen_Maru_Gothic({
   variable: "--font-zen-maru",
   weight: ["400", "500", "700"],
-  subsets: ["latin", "latin-ext", "japanese"],
+  subsets: ["latin", "latin-ext"],
 });
 
 export const metadata: Metadata = {
