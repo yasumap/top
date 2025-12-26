@@ -39,7 +39,7 @@ const storySegments = [
   "このプロダクトを無料で提供しているのには、理由があります。道端のベンチが誰にでも開かれているのと同じように、このアプリも「街の公共物」でありたいからです。",
   "困っている人から対価をもらうのではなく、学生もお年寄りも誰もが気兼ねなく使える「優しさ」の場所であり続けたいと考えています。",
   "その代わり、もしこの活動に「いいな」と共感してくださる方がいたら、無理のない範囲で支えていただけないでしょうか。",
-  "皆さんからいただく1円は、単なる利用料ではありません。",
+  "皆さんからいただく支援金は、単なる利用料ではありません。",
   "「次はあそこにベンチを増やそう」「この街をもっと歩きやすくしよう」という、温かい社会を作るための応援のバトンです。",
   "同じ気持ちである皆さんの温かい応援が、大学生である私たちの活動を続ける大きな理由になります。",
   "誰かがほんの少し笑顔になれる未来を、私たちと一緒に作っていきませんか。",
@@ -67,7 +67,7 @@ function FadeIn({ children, delay = 0 }: FadeInProps) {
           setVisible(entry.isIntersecting);
         });
       },
-      { threshold: 0.35 }
+      { threshold: 0, rootMargin: "20% 0px" }
     );
 
     if (ref.current) {
@@ -133,7 +133,7 @@ export default function Home() {
         <section className="relative z-10 px-6 pb-20">
           <div className="mx-auto flex max-w-3xl flex-col gap-8">
             {passages.map((item, index) => (
-              <FadeIn key={item.title} delay={index * 120}>
+              <FadeIn key={item.title} delay={index * 80}>
                 <article className="space-y-3 rounded-3xl border border-white/10 bg-white/12 px-6 py-7 shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur">
                   <h2 className="text-xl font-semibold text-white">
                     {item.title}
@@ -147,7 +147,7 @@ export default function Home() {
 
             <div className="mt-6 space-y-5 text-lg leading-8 text-[#fff5e8] tracking-[0.01em]">
               {storySegments.map((paragraph, idx) => (
-                <FadeIn key={idx} delay={passages.length * 140 + idx * 180}>
+                <FadeIn key={idx} delay={passages.length * 100 + idx * 120}>
                   <p className="drop-shadow-[0_12px_35px_rgba(0,0,0,0.35)]">
                     {paragraph}
                   </p>
