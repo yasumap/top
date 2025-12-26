@@ -10,20 +10,8 @@ type FadeInProps = {
 
 const passages = [
   {
-    title: "ふと、腰を下ろしたいとき",
-    body: "買い物の途中、子どもを連れて歩くとき、雨上がりに広い空を見上げたいとき。あと5分だけ座れたら、という瞬間が街にはいくつもあります。",
-  },
-  {
-    title: "街の一部としてひらく",
-    body: "やすまっぷは、そうした小さな困りごとを減らすために生まれた試みです。夕暮れに染まる道ばたに、そっとベンチの場所を示す。看板よりも静かに、風景に溶け込むように。",
-  },
-  {
-    title: "無料で、やわらかく",
-    body: "お金を介さず、だれでも気軽に座れる場所を知ってもらうこと。それを続けるための地図づくりと整備を、無料のまま保ちたいと考えています。",
-  },
-  {
-    title: "支援という応援のかたち",
-    body: "「いいな」と思ってもらえたとき、そっと支えてくれる仕組みを用意する予定です。決済機能はまだありませんが、応援の気持ちはしっかり受け止められるよう準備を進めています。",
+    title: "小さな困りごとから、生まれた地図",
+    body: "ほんの数分だけ腰を下ろしたいのに、場所が見つからない。そんな日常の小さな不便が、気づかれないまま積み重なっていました。やすまっぷは、その見過ごされがちな困りごとに静かに光を当て、必要な人が迷わず一息つけるようにするための地図です。",
   },
 ];
 
@@ -91,9 +79,15 @@ function FadeIn({ children, delay = 0 }: FadeInProps) {
 }
 
 export default function Home() {
+  const [bgLoaded, setBgLoaded] = useState(false);
+
   return (
     <div className="relative min-h-screen overflow-hidden text-white">
-      <div className="absolute inset-0 -z-10">
+      <div
+        className={`absolute inset-0 -z-10 ${
+          bgLoaded ? "bg-transparent" : "bg-[#CBA1A4]"
+        }`}
+      >
         <Image
           src="/夕日のベンチ_LP用背景画像.png"
           alt=""
@@ -102,15 +96,16 @@ export default function Home() {
           sizes="100vw"
           className="object-cover"
           style={{ objectPosition: "center bottom" }}
+          onLoadingComplete={() => setBgLoaded(true)}
         />
         <div className="absolute inset-0 bg-black/12" />
       </div>
 
       <main className="relative flex min-h-screen flex-col pb-28 sm:pb-24">
-        <section className="flex min-h-screen items-center px-6 py-16">
+        <section className="flex min-h-screen items-center px-6 py-8">
           <div className="relative mx-auto flex max-w-4xl flex-col items-center text-center">
-            <div className="mb-10 inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/80 backdrop-blur">
-              <span>街に、ひと息を</span>
+            <div className="mb-5 inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/80 backdrop-blur">
+              <span>ひとやすみのための地図</span>
               <span className="h-1 w-1 rounded-full bg-white/60" />
               <span>やすまっぷ</span>
             </div>
@@ -118,12 +113,17 @@ export default function Home() {
             <FadeIn>
               <div className="px-7 py-8">
                 <h1 className="text-4xl leading-[1.25] text-[#fffaf3] drop-shadow-[0_10px_24px_rgba(0,0,0,0.35)] sm:text-5xl md:text-6xl">
-                  <span className="block">街角に、やさしい</span>
-                  <span className="block">ベンチの地図を</span>
+                  <span className="block">みんなにやさしい</span>
+                  <span className="block">ベンチの地図</span>
                 </h1>
                 <p className="mt-6 max-w-3xl text-lg leading-8 text-[#fff6eb] drop-shadow-[0_8px_22px_rgba(0,0,0,0.32)] sm:text-xl">
-                  福岡の街にそっと置かれた長椅子のように、だれかが少しだけ休める場所を灯していく。
-                  広告より静かに、でも確かに届く「座れる目印」を描いていきます。
+                  この困りごとは、命に関わるような大きな問題ではないかもしれません。
+                  <br />
+                  だからこそ、ずっと見過ごされ、放置されてきました。
+                  <br />
+                  私たちは、そんな「小さくて見過ごされがちな困りごと」を、
+                  <br />
+                  テクノロジーで解決したいと思いました。
                 </p>
               </div>
             </FadeIn>
