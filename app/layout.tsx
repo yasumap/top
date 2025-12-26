@@ -19,9 +19,16 @@ const zenMaru = Zen_Maru_Gothic({
 });
 
 export const metadata: Metadata = {
-  title: "やすまっぷ | 街に、ひと息を",
+  title: "やすまっぷ｜座れる場所がわかる、ほっとひと息マップ",
   description:
-    "街のどこかで少しだけ座れる場所をそっと示す、やすまっぷ。無料で広がる、街の一部のような取り組みです。",
+    "街中のベンチや座れる場所を、今いる場所からすぐに探せるマップサービスです。お金をかけずに一息つける場所を見つけられます。",
+  openGraph: {
+    title: "やすまっぷ｜座れる場所がわかる、ほっとひと息マップ",
+    description:
+      "街中のベンチや座れる場所を、今いる場所からすぐに探せるマップサービスです。お金をかけずに一息つける場所を見つけられます。",
+    type: "website",
+    locale: "ja_JP",
+  },
   icons: {
     icon: [
       { url: "/favicon.svg", type: "image/svg+xml" },
