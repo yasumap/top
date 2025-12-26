@@ -41,8 +41,19 @@ const storySegments = [
   "その代わり、もしこの活動に「いいな」と共感してくださる方がいたら、無理のない範囲で支えていただけないでしょうか。",
   "皆さんからいただく1円は、単なる利用料ではありません。",
   "「次はあそこにベンチを増やそう」「この街をもっと歩きやすくしよう」という、温かい社会を作るための応援のバトンです。",
-  "1円でも、それが大学生である私たちの活動を続ける大きな理由になります。",
+  "同じ気持ちである皆さんの温かい応援が、大学生である私たちの活動を続ける大きな理由になります。",
   "誰かがほんの少し笑顔になれる未来を、私たちと一緒に作っていきませんか。",
+];
+
+const quickActions = [
+  {
+    label: "近くのベンチを探してみる",
+    href: "/coming-soon",
+  },
+  {
+    label: "地図でベンチを見てみる",
+    href: "/coming-soon",
+  },
 ];
 
 function FadeIn({ children, delay = 0 }: FadeInProps) {
@@ -95,7 +106,7 @@ export default function Home() {
         <div className="absolute inset-0 bg-black/12" />
       </div>
 
-      <main className="relative flex min-h-screen flex-col">
+      <main className="relative flex min-h-screen flex-col pb-28 sm:pb-24">
         <section className="flex min-h-screen items-center px-6 py-16">
           <div className="relative mx-auto flex max-w-4xl flex-col items-center text-center">
             <div className="mb-10 inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/80 backdrop-blur">
@@ -146,6 +157,18 @@ export default function Home() {
           </div>
         </section>
 
+        <section className="relative z-10 px-6 pb-20">
+          <div className="mx-auto flex max-w-3xl justify-center">
+            <a
+              href="/coming-soon"
+              title="Coming Soon"
+              className="group inline-flex w-full items-center justify-center gap-3 rounded-full border border-white/20 bg-white/12 px-6 py-4 text-base font-semibold text-[#fff6eb] shadow-[0_18px_45px_rgba(0,0,0,0.28)] backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/18 hover:shadow-[0_24px_55px_rgba(0,0,0,0.32)] active:translate-y-0 active:shadow-[0_12px_30px_rgba(0,0,0,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd1a1] focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 sm:w-auto"
+            >
+              <span className="text-lg">応援していただける方はこちら</span>
+            </a>
+          </div>
+        </section>
+
         <footer className="relative z-10 mt-auto px-6 pb-10">
           <div className="mx-auto flex max-w-3xl items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm text-white/80 backdrop-blur">
             <div className="flex items-center gap-3">
@@ -158,6 +181,21 @@ export default function Home() {
           </div>
         </footer>
       </main>
+
+      <div className="fixed inset-x-0 bottom-4 z-30 px-4 sm:bottom-6 sm:px-6">
+        <div className="mx-auto flex max-w-3xl flex-col gap-3 sm:flex-row sm:justify-center">
+          {quickActions.map((action) => (
+            <a
+              key={action.label}
+              href={action.href}
+              title="Coming Soon"
+              className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/25 bg-white/85 px-5 py-3 text-sm font-semibold text-[#6b4b3a] shadow-[0_16px_36px_rgba(0,0,0,0.25)] backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_20px_44px_rgba(0,0,0,0.3)] active:translate-y-0 active:shadow-[0_10px_24px_rgba(0,0,0,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd1a1] focus-visible:ring-offset-2 focus-visible:ring-offset-black/40"
+            >
+              {action.label}
+            </a>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
