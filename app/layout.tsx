@@ -23,7 +23,10 @@ export const metadata: Metadata = {
   description:
     "街のどこかで少しだけ座れる場所をそっと示す、やすまっぷ。無料で広がる、街の一部のような取り組みです。",
   icons: {
-    icon: "/椅子_ファビコン用.png",
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/やすまっぷ_ロゴ案_02.png", type: "image/png" },
+    ],
   },
 };
 
