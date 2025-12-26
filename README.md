@@ -1,36 +1,32 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# yasumap LP
 
-## Getting Started
+やすまっぷ（yasumap）の静的LPです。背景画像を主役に、1カラムで静かにストーリーを伝える構成です。
 
-First, run the development server:
+## Tech
+- Next.js (App Router)
+- TypeScript
+- Tailwind CSS
 
+## Design/Behavior
+- 背景画像を全面に表示し、強いオーバーレイは使わない
+- 文字は白基調で、余白と読みやすさを重視
+- IntersectionObserver でフェードイン/アウト
+- 高速スクロールでもメッセージが出るよう発火範囲を広げる
+
+## Content Notes
+- ヒーローは2行のキャッチ + 説明文
+- 上段の説明ブロックは1つに集約
+- 指定文言に合わせて改行を入れている
+
+## Assets
+- 背景画像: `public/夕日のベンチ_LP用背景画像.png`
+- ファビコン: `public/椅子_ファビコン用.png` を `app/icon.png` と `app/apple-icon.png` に配置
+
+## Development
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Notes
+- 背景画像の読み込み完了まで、近い色の下地を表示して黒転びを防ぐ
