@@ -95,7 +95,7 @@ export default function Home() {
           priority
           sizes="100vw"
           className="object-cover"
-          style={{ objectPosition: "center bottom" }}
+          style={{ objectPosition: "left bottom" }}
           onLoadingComplete={() => setBgLoaded(true)}
         />
         <div className="absolute inset-0 bg-black/12" />
@@ -112,17 +112,17 @@ export default function Home() {
 
             <FadeIn>
               <div className="px-7 py-8">
-                <h1 className="text-4xl leading-[1.25] text-[#fffaf3] drop-shadow-[0_10px_24px_rgba(0,0,0,0.35)] sm:text-5xl md:text-6xl">
+                <h1 className="text-[clamp(2.1rem,7vw,2.8rem)] leading-[1.25] text-[#fffaf3] drop-shadow-[0_10px_24px_rgba(0,0,0,0.35)] sm:text-5xl md:text-6xl">
                   <span className="block">みんなにやさしい</span>
                   <span className="block">ベンチの地図</span>
                 </h1>
-                <p className="mt-6 max-w-3xl text-lg leading-8 text-[#fff6eb] drop-shadow-[0_8px_22px_rgba(0,0,0,0.32)] sm:text-xl">
+                <p className="mt-6 max-w-3xl text-[clamp(0.95rem,3.6vw,1.05rem)] leading-8 text-[#fff6eb] drop-shadow-[0_8px_22px_rgba(0,0,0,0.32)] sm:text-xl">
                   この困りごとは、命に関わるような大きな問題ではないかもしれません。
-                  <br />
+                  <br className="hidden sm:block" />
                   だからこそ、ずっと見過ごされ、放置されてきました。
-                  <br />
+                  <br className="hidden sm:block" />
                   私たちは、そんな「小さくて見過ごされがちな困りごと」を、
-                  <br />
+                  <br className="hidden sm:block" />
                   テクノロジーで解決したいと思いました。
                 </p>
               </div>
