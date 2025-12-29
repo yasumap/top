@@ -2,14 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { SupportEntry } from "@/lib/supabase";
 
 type SurveyState = {
   penName: string;
-  discovery: string;
-  motive: string;
-  impression: string;
+  penNamePrivate: boolean;
+  reasons: string[];
+  otherReason: string;
+  appImpression: string;
   note: string;
 };
 
@@ -18,102 +19,104 @@ type SubmitState = "idle" | "submitting" | "submitted" | "skipped" | "error";
 type ThanksClientProps = {
   token: string;
   entry: SupportEntry;
+  preview?: boolean;
+  previewDone?: boolean;
 };
 
-const discoveryOptions = [
-  "X（旧Twitter）",
-  "Instagram",
-  "友人・知人の紹介",
-  "学内・街で見かけた",
-  "検索・記事",
+const reasonOptions = [
+  "このサービスが広まってほしいと思った",
+  "学生の取り組みを応援したいと思った",
+  "自分自身もベンチに困った経験があった",
+  "コンセプトに共感した",
+  "実際に使って役に立ったから",
   "その他",
 ];
 
-const motiveOptions = [
-  {
-    value: "product",
-    label: "プロダクトの役立ちそうな点に共感した",
-  },
-  {
-    value: "concept",
-    label: "考え方やコンセプトに惹かれた",
-  },
-  {
-    value: "team",
-    label: "つくっている人を応援したいと思った",
-  },
-  {
-    value: "mood",
-    label: "なんとなく良いな、と感じた",
-  },
+const appImpressionOptions = [
+  "とても使いやすかった",
+  "まあ使いやすかった",
+  "使いづらかった",
+  "使っていない",
 ];
 
-const impressionOptions = [
-  "とても良い印象",
-  "良い印象",
-  "ふつう",
-  "これからに期待",
-];
+const privacySuffix = "（ペンネーム非公開希望）";
 
-const resultMessages: Record<string, string> = {
-  product:
-    "実用性に目がいくタイプ。必要な人に届く設計を、さらに磨いていきます。",
-  concept:
-    "考え方に共感してくれるタイプ。芯のあるやさしさを育てていきます。",
-  team:
-    "人を応援してくれるタイプ。小さな前進を丁寧に積み重ねます。",
-  mood:
-    "直感を大切にするタイプ。ふと立ち寄りたくなる存在を目指します。",
-};
-
-function getMotiveLabel(value: string) {
-  return motiveOptions.find((option) => option.value === value)?.label ?? value;
-}
-
-export default function ThanksClient({ token, entry }: ThanksClientProps) {
+export default function ThanksClient({
+  token,
+  entry,
+  preview = false,
+  previewDone = false,
+}: ThanksClientProps) {
   const isLocked = Boolean(entry.answered_at);
+  const rawNote = entry.note ?? "";
+  const noteHasPrivacy = rawNote.includes(privacySuffix);
+  const cleanedNote = rawNote.replace(new RegExp(`\\n?${privacySuffix}$`), "");
+  const normalizedNote = cleanedNote.trim();
+  const parsedReasons = (entry.motive ?? "")
+    .split(" / ")
+    .map((item) => item.trim())
+    .filter(Boolean);
+  const otherReasonItem = parsedReasons.find((item) =>
+    item.startsWith("その他:")
+  );
+  const otherReason = otherReasonItem
+    ? otherReasonItem.replace(/^その他:\s*/, "")
+    : "";
+  const baseReasons = parsedReasons.filter(
+    (item) => !item.startsWith("その他:")
+  );
+  const initialReasons = otherReason
+    ? Array.from(new Set([...baseReasons, "その他"]))
+    : baseReasons;
+
   const [survey, setSurvey] = useState<SurveyState>({
     penName: entry.pen_name ?? "",
-    discovery: entry.discovery ?? "",
-    motive: entry.motive ?? "",
-    impression: entry.impression ?? "",
-    note: entry.note ?? "",
+    penNamePrivate: noteHasPrivacy,
+    reasons: initialReasons,
+    otherReason,
+    appImpression: entry.impression ?? "",
+    note: normalizedNote,
   });
   const [status, setStatus] = useState<SubmitState>(
-    isLocked ? "submitted" : "idle"
+    previewDone ? "submitted" : isLocked ? "submitted" : "idle"
   );
   const [errorMessage, setErrorMessage] = useState("");
 
-  const resultMessage = useMemo(() => {
-    if (!survey.motive) {
-      return "静かな応援が、次の一歩につながります。";
-    }
-    return resultMessages[survey.motive] ?? resultMessages.mood;
-  }, [survey.motive]);
-
   const handleChange = (
     key: keyof SurveyState,
-    value: string
+    value: string | boolean
   ): void => {
     setSurvey((prev) => ({ ...prev, [key]: value }));
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (preview) {
+      setStatus("submitted");
+      return;
+    }
     setStatus("submitting");
     setErrorMessage("");
 
     try {
+      const baseNote =
+        typeof survey.note === "string" ? survey.note.trim() : "";
+      const noteWithPreference = survey.penNamePrivate
+        ? baseNote
+          ? `${baseNote}\n${privacySuffix}`
+          : privacySuffix
+        : baseNote;
+
       const response = await fetch("/api/thanks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           token,
           penName: survey.penName,
-          discovery: survey.discovery,
-          motive: survey.motive,
-          impression: survey.impression,
-          note: survey.note,
+          reasons: survey.reasons,
+          otherReason: survey.otherReason,
+          appImpression: survey.appImpression,
+          note: noteWithPreference,
         }),
       });
 
@@ -135,11 +138,13 @@ export default function ThanksClient({ token, entry }: ThanksClientProps) {
     }
   };
 
-  const isComplete = survey.discovery && survey.motive && survey.impression;
+  const isComplete = survey.reasons.length > 0 && survey.appImpression;
+  const showFormIntro =
+    status === "idle" || status === "submitting" || status === "error";
 
   return (
     <div className="relative min-h-screen overflow-hidden text-white">
-      <div className="absolute inset-0 -z-10">
+      <div className="absolute inset-0 -z-10 bg-[#CBA1A4]">
         <Image
           src="/夕日のベンチ_LP用背景画像.png"
           alt=""
@@ -152,46 +157,60 @@ export default function ThanksClient({ token, entry }: ThanksClientProps) {
         <div className="absolute inset-0 bg-black/24" />
       </div>
 
-      <main className="relative mx-auto flex min-h-screen max-w-4xl flex-col gap-10 px-6 pb-24 pt-16">
-        <header className="space-y-4">
+      <main
+        className={`relative mx-auto flex min-h-screen max-w-4xl flex-col px-6 pb-24 pt-16 ${
+          status === "submitted" || status === "skipped" ? "gap-6" : "gap-10"
+        }`}
+      >
+        <header className="space-y-8">
           <p className="text-sm uppercase tracking-[0.35em] text-white/70">
             Thanks
           </p>
           <h1 className="text-[clamp(2rem,6vw,3rem)] leading-tight text-[#fffaf3] drop-shadow-[0_10px_24px_rgba(0,0,0,0.35)]">
-            ご支援ありがとうございます。
+            ご支援ありがとうございます
           </h1>
           <p className="max-w-2xl text-[clamp(1rem,3.4vw,1.1rem)] leading-7 text-white/85 drop-shadow-[0_8px_22px_rgba(0,0,0,0.3)]">
-            やすまっぷの活動は、あなたのような応援で続いています。
-            1分ほどの軽いアンケートで、これからのヒントをいただけると嬉しいです。
+            やすまっぷの活動は、みなさまからの応援で成り立っています。
+            <br />
+            これからの運用をより良くするため、感想をお聞かせいただけると幸いです。
           </p>
         </header>
 
         <section className="rounded-3xl border border-white/12 bg-white/10 px-6 py-8 shadow-[0_24px_60px_rgba(0,0,0,0.3)] backdrop-blur">
-          <div className="flex flex-col gap-3 text-sm text-white/70">
-            <p>アンケートは任意です。途中でスキップできます。</p>
-            <p>
-              ペンネームは、支援者一覧としてSNS等で公開する場合があります。
-            </p>
-            <p>みなさんの声が、やすまっぷの小さなコミュニティになります。</p>
-          </div>
+          {showFormIntro && (
+            <div className="flex flex-col gap-3 text-sm text-white/70">
+              {preview && (
+                <p className="text-[#ffd1a1]">
+                  プレビュー表示中です。送信は行われません。
+                </p>
+              )}
+              <p>
+                最後に1分ほどお時間をいただけましたら、皆様のご意見をお聞かせください。
+              </p>
+              <p>スキップも可能です。</p>
+            </div>
+          )}
 
           {status === "submitted" || status === "skipped" ? (
-            <div className="mt-8 space-y-5">
-              <div className="rounded-2xl border border-white/15 bg-white/10 px-5 py-6">
-                <p className="text-sm tracking-[0.25em] text-white/60">
-                  支援タイプ
-                </p>
-                <h2 className="mt-3 text-xl font-semibold text-white">
+            <div className="mt-4 space-y-5">
+              <div className="space-y-3 rounded-2xl border border-white/15 bg-white/10 px-5 py-6">
+                <h2 className="text-xl font-semibold text-white">
                   {survey.penName
                     ? `${survey.penName}さん、ありがとうございました。`
                     : "ありがとうございました。"}
                 </h2>
-                <p className="mt-2 text-sm text-white/70">
-                  あなたの支援タイプ
-                </p>
-                <p className="mt-3 text-base leading-7 text-white/80">
-                  {resultMessage}
-                </p>
+                {status === "submitted" && (
+                  <p className="text-base leading-7 text-white/80">
+                    ご支援心から感謝いたします。
+                    <br />
+                    これからも私たちの活動を温かく見守っていただけますと幸いです。
+                  </p>
+                )}
+                {status === "skipped" && (
+                  <p className="text-base leading-7 text-white/80">
+                    みなさまのご支援が、活動の大きな励みになります。
+                  </p>
+                )}
               </div>
 
               {(status === "submitted" || isLocked) && (
@@ -205,20 +224,28 @@ export default function ThanksClient({ token, entry }: ThanksClientProps) {
                       <dd>{survey.penName || "未記入"}</dd>
                     </div>
                     <div>
-                      <dt className="text-white/60">流入元</dt>
-                      <dd>{survey.discovery || "未記入"}</dd>
+                      <dt className="text-white/60">ペンネーム公開</dt>
+                      <dd>
+                        {survey.penNamePrivate ? "非公開希望" : "公開可"}
+                      </dd>
                     </div>
                     <div>
                       <dt className="text-white/60">支援理由</dt>
                       <dd>
-                        {survey.motive
-                          ? getMotiveLabel(survey.motive)
+                        {survey.reasons.length > 0
+                          ? survey.reasons
+                              .map((reason) =>
+                                reason === "その他" && survey.otherReason
+                                  ? `その他: ${survey.otherReason}`
+                                  : reason
+                              )
+                              .join(" / ")
                           : "未記入"}
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-white/60">全体の印象</dt>
-                      <dd>{survey.impression || "未記入"}</dd>
+                      <dt className="text-white/60">利用した印象</dt>
+                      <dd>{survey.appImpression || "未記入"}</dd>
                     </div>
                     <div>
                       <dt className="text-white/60">ひとこと</dt>
@@ -247,13 +274,16 @@ export default function ThanksClient({ token, entry }: ThanksClientProps) {
               </div>
             </div>
           ) : (
-            <form className="mt-8 space-y-8" onSubmit={handleSubmit}>
+            <form className="mt-8 space-y-16" onSubmit={handleSubmit}>
               <div className="space-y-3">
-                <div className="flex flex-wrap items-end justify-between gap-2">
+                <div className="flex flex-wrap items-end gap-3">
                   <label className="text-base font-semibold text-white">
                     ペンネーム
                   </label>
                   <span className="text-xs text-white/60">任意</span>
+                  <span className="ml-auto text-xs text-white/60">
+                    今後のSNS上の活動報告で、ペンネームをご紹介する場合があります。
+                  </span>
                 </div>
                 <input
                   type="text"
@@ -264,117 +294,122 @@ export default function ThanksClient({ token, entry }: ThanksClientProps) {
                   placeholder="例：やすみん"
                   className="w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-base text-white placeholder:text-white/40 focus:border-white/60 focus:outline-none"
                 />
+                <label className="flex cursor-pointer items-center gap-3 text-sm text-white/70">
+                  <input
+                    type="checkbox"
+                    checked={survey.penNamePrivate}
+                    onChange={(event) =>
+                      handleChange("penNamePrivate", event.target.checked)
+                    }
+                    className="sr-only"
+                  />
+                  <span className="flex h-4 w-4 items-center justify-center rounded border border-white/50 bg-white/10 text-[11px] font-semibold text-white">
+                    {survey.penNamePrivate ? "✓" : ""}
+                  </span>
+                  <span>
+                    ペンネームを非公開にする
+                  </span>
+                </label>
               </div>
 
               <div className="space-y-4">
                 <div className="flex flex-wrap items-end justify-between gap-2">
                   <p className="text-base font-semibold text-white">
-                    どこで知りましたか？
+                    ご支援いただいた理由（複数回答可）
                   </p>
                   <span className="text-xs text-white/60">必須</span>
                 </div>
                 <div className="grid gap-3 sm:grid-cols-2">
-                  {discoveryOptions.map((option) => (
+                  {reasonOptions.map((option) => {
+                    const isChecked = survey.reasons.includes(option);
+                    return (
+                      <label
+                        key={option}
+                        className={`flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-3 text-sm transition ${
+                          isChecked
+                            ? "border-white/70 bg-white/20 text-white"
+                            : "border-white/15 bg-white/5 text-white/70 hover:bg-white/10"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          name="reasons"
+                          value={option}
+                          checked={isChecked}
+                          onChange={(event) => {
+                            const checked = event.target.checked;
+                            setSurvey((prev) => {
+                              const next = checked
+                                ? [...prev.reasons, option]
+                                : prev.reasons.filter((item) => item !== option);
+                              return {
+                                ...prev,
+                                reasons: next,
+                                otherReason:
+                                  option === "その他" && !checked
+                                    ? ""
+                                    : prev.otherReason,
+                              };
+                            });
+                          }}
+                          className="hidden"
+                        />
+                        <span className="mt-0.5 h-3 w-3 rounded border border-white/50 bg-white/20">
+                          <span
+                            className={`block h-full w-full rounded ${
+                              isChecked ? "bg-white" : "bg-transparent"
+                            }`}
+                          />
+                        </span>
+                        <span>{option}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+                {survey.reasons.includes("その他") && (
+                  <div className="mt-3">
+                    <input
+                      type="text"
+                      value={survey.otherReason}
+                      onChange={(event) =>
+                        handleChange("otherReason", event.target.value)
+                      }
+                      placeholder="その他（自由記述・未入力でも送信可能）"
+                      className="w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-base text-white placeholder:text-white/40 focus:border-white/60 focus:outline-none"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-end justify-between gap-2">
+                  <p className="text-base font-semibold text-white">
+                    やすまっぷを使ってみた印象
+                  </p>
+                  <span className="text-xs text-white/60">必須</span>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {appImpressionOptions.map((option) => (
                     <label
                       key={option}
                       className={`flex cursor-pointer items-center gap-3 rounded-2xl border px-4 py-3 text-sm transition ${
-                        survey.discovery === option
+                        survey.appImpression === option
                           ? "border-white/70 bg-white/20 text-white"
                           : "border-white/15 bg-white/5 text-white/70 hover:bg-white/10"
                       }`}
                     >
                       <input
                         type="radio"
-                        name="discovery"
+                        name="appImpression"
                         value={option}
-                        checked={survey.discovery === option}
-                        onChange={() => handleChange("discovery", option)}
+                        checked={survey.appImpression === option}
+                        onChange={() => handleChange("appImpression", option)}
                         className="hidden"
                       />
                       <span className="h-2.5 w-2.5 rounded-full border border-white/50 bg-white/20">
                         <span
                           className={`block h-full w-full rounded-full ${
-                            survey.discovery === option
-                              ? "bg-white"
-                              : "bg-transparent"
-                          }`}
-                        />
-                      </span>
-                      <span>{option}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex flex-wrap items-end justify-between gap-2">
-                  <p className="text-base font-semibold text-white">
-                    支援しようと思った理由に近いものは？
-                  </p>
-                  <span className="text-xs text-white/60">必須</span>
-                </div>
-                <div className="space-y-3">
-                  {motiveOptions.map((option) => (
-                    <label
-                      key={option.value}
-                      className={`flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-3 text-sm transition ${
-                        survey.motive === option.value
-                          ? "border-white/70 bg-white/20 text-white"
-                          : "border-white/15 bg-white/5 text-white/70 hover:bg-white/10"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="motive"
-                        value={option.value}
-                        checked={survey.motive === option.value}
-                        onChange={() => handleChange("motive", option.value)}
-                        className="hidden"
-                      />
-                      <span className="mt-1 h-2.5 w-2.5 rounded-full border border-white/50 bg-white/20">
-                        <span
-                          className={`block h-full w-full rounded-full ${
-                            survey.motive === option.value
-                              ? "bg-white"
-                              : "bg-transparent"
-                          }`}
-                        />
-                      </span>
-                      <span>{option.label}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex flex-wrap items-end justify-between gap-2">
-                  <p className="text-base font-semibold text-white">
-                    全体の印象はどうでしたか？
-                  </p>
-                  <span className="text-xs text-white/60">必須</span>
-                </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {impressionOptions.map((option) => (
-                    <label
-                      key={option}
-                      className={`flex cursor-pointer items-center gap-3 rounded-2xl border px-4 py-3 text-sm transition ${
-                        survey.impression === option
-                          ? "border-white/70 bg-white/20 text-white"
-                          : "border-white/15 bg-white/5 text-white/70 hover:bg-white/10"
-                      }`}
-                    >
-                      <input
-                        type="radio"
-                        name="impression"
-                        value={option}
-                        checked={survey.impression === option}
-                        onChange={() => handleChange("impression", option)}
-                        className="hidden"
-                      />
-                      <span className="h-2.5 w-2.5 rounded-full border border-white/50 bg-white/20">
-                        <span
-                          className={`block h-full w-full rounded-full ${
-                            survey.impression === option
+                            survey.appImpression === option
                               ? "bg-white"
                               : "bg-transparent"
                           }`}
@@ -389,7 +424,7 @@ export default function ThanksClient({ token, entry }: ThanksClientProps) {
               <div className="space-y-3">
                 <div className="flex flex-wrap items-end justify-between gap-2">
                   <p className="text-base font-semibold text-white">
-                    ひとこと（任意）
+                    自由記述（任意）
                   </p>
                   <span className="text-xs text-white/60">任意</span>
                 </div>
@@ -397,7 +432,7 @@ export default function ThanksClient({ token, entry }: ThanksClientProps) {
                   value={survey.note}
                   onChange={(event) => handleChange("note", event.target.value)}
                   rows={4}
-                  placeholder="短くても嬉しいです。"
+                  placeholder="例：改善してほしい点や、新たなサービス案など。"
                   className="w-full resize-none rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-base text-white placeholder:text-white/40 focus:border-white/60 focus:outline-none"
                 />
               </div>

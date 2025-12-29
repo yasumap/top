@@ -6,18 +6,30 @@ export async function POST(request: Request) {
   const {
     token,
     penName,
-    discovery,
-    motive,
-    impression,
+    reasons,
+    otherReason,
+    appImpression,
     note,
   } = body ?? {};
 
-  if (!token || !discovery || !motive || !impression) {
+  if (!token || !Array.isArray(reasons) || reasons.length === 0 || !appImpression) {
     return NextResponse.json(
       { ok: false, error: "必須項目が不足しています。" },
       { status: 400 }
     );
   }
+
+  const normalizedReasons = reasons
+    .filter((item): item is string => typeof item === "string")
+    .map((item) => item.trim())
+    .filter(Boolean);
+  const trimmedOtherReason =
+    typeof otherReason === "string" ? otherReason.trim() : "";
+  if (trimmedOtherReason) {
+    normalizedReasons.push(`その他: ${trimmedOtherReason}`);
+  }
+  const motive =
+    normalizedReasons.length > 0 ? normalizedReasons.join(" / ") : null;
 
   const baseUrl = getSupabaseBaseUrl();
   const headers = {
@@ -35,9 +47,9 @@ export async function POST(request: Request) {
       body: JSON.stringify({
         answered_at: new Date().toISOString(),
         pen_name: typeof penName === "string" ? penName.trim() || null : null,
-        discovery,
+        discovery: null,
         motive,
-        impression,
+        impression: appImpression,
         note: typeof note === "string" ? note.trim() || null : null,
       }),
     }
