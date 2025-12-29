@@ -1,0 +1,9 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client"  // v7 ではこれ推奨（"prisma-client-js" から変更）:contentReference[oaicite:1]{index=1}
+}
+
+datasource db {
+  provider = "postgresql"      // Supabase なので postgresql のままでOK
+}

@@ -20,12 +20,12 @@ function GateMessage({
   title,
   description,
 }: {
-  title: string;
+  title: React.ReactNode;
   description: string;
 }) {
   return (
     <div className="relative min-h-screen overflow-hidden text-white">
-      <div className="absolute inset-0 -z-10">
+      <div className="absolute inset-0 -z-10 bg-[#CBA1A4]">
         <Image
           src="/夕日のベンチ_LP用背景画像.png"
           alt=""
@@ -67,8 +67,14 @@ export default async function ThanksPage({ searchParams }: ThanksPageProps) {
   if (!token) {
     return (
       <GateMessage
-        title="このページは支援者の方限定です"
-        description="支援完了後にお届けする専用URLからアクセスしてください。"
+        title={
+          <>
+            このページは支援者の方への
+            <br />
+            Thanksページです
+          </>
+        }
+        description="ご支援の後お届けする専用URLからアクセスしてください"
       />
     );
   }
