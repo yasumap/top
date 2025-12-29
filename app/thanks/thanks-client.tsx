@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import type { SupportEntry } from "@/lib/supabase";
 
 type SurveyState = {
@@ -39,14 +39,7 @@ const appImpressionOptions = [
   "使っていない",
 ];
 
-const resultMessages: Record<string, string> = {
-  service: "広がりを願う想い、しっかり受け取っています。",
-  team: "応援の気持ちが励みになります。小さく前へ進みます。",
-  empathy: "同じ体験を感じてくださって、心強いです。",
-  concept: "考え方に共感してくださる気持ちを大切にします。",
-  product: "実感の声が、次の改善のヒントになります。",
-  default: "静かな応援が、次の一歩につながります。",
-};
+const privacySuffix = "（ペンネーム非公開希望）";
 
 export default function ThanksClient({
   token,
@@ -55,6 +48,10 @@ export default function ThanksClient({
   previewDone = false,
 }: ThanksClientProps) {
   const isLocked = Boolean(entry.answered_at);
+  const rawNote = entry.note ?? "";
+  const noteHasPrivacy = rawNote.includes(privacySuffix);
+  const cleanedNote = rawNote.replace(new RegExp(`\\n?${privacySuffix}$`), "");
+  const normalizedNote = cleanedNote.trim();
   const parsedReasons = (entry.motive ?? "")
     .split(" / ")
     .map((item) => item.trim())
@@ -74,35 +71,16 @@ export default function ThanksClient({
 
   const [survey, setSurvey] = useState<SurveyState>({
     penName: entry.pen_name ?? "",
-    penNamePrivate: false,
+    penNamePrivate: noteHasPrivacy,
     reasons: initialReasons,
     otherReason,
     appImpression: entry.impression ?? "",
-    note: entry.note ?? "",
+    note: normalizedNote,
   });
   const [status, setStatus] = useState<SubmitState>(
     previewDone ? "submitted" : isLocked ? "submitted" : "idle"
   );
   const [errorMessage, setErrorMessage] = useState("");
-
-  const resultMessage = useMemo(() => {
-    if (survey.reasons.includes("実際に使って役に立ったから")) {
-      return resultMessages.product;
-    }
-    if (survey.reasons.includes("コンセプトに共感した")) {
-      return resultMessages.concept;
-    }
-    if (survey.reasons.includes("学生の取り組みを応援したいと思った")) {
-      return resultMessages.team;
-    }
-    if (survey.reasons.includes("自分自身もベンチに困った経験があった")) {
-      return resultMessages.empathy;
-    }
-    if (survey.reasons.includes("このサービスが広まってほしいと思った")) {
-      return resultMessages.service;
-    }
-    return resultMessages.default;
-  }, [survey.reasons]);
 
   const handleChange = (
     key: keyof SurveyState,
@@ -121,13 +99,13 @@ export default function ThanksClient({
     setErrorMessage("");
 
     try {
-      const normalizedNote =
+      const baseNote =
         typeof survey.note === "string" ? survey.note.trim() : "";
       const noteWithPreference = survey.penNamePrivate
-        ? normalizedNote
-          ? `${normalizedNote}\n（ペンネーム非公開希望）`
-          : "（ペンネーム非公開希望）"
-        : normalizedNote;
+        ? baseNote
+          ? `${baseNote}\n${privacySuffix}`
+          : privacySuffix
+        : baseNote;
 
       const response = await fetch("/api/thanks", {
         method: "POST",
@@ -161,6 +139,8 @@ export default function ThanksClient({
   };
 
   const isComplete = survey.reasons.length > 0 && survey.appImpression;
+  const showFormIntro =
+    status === "idle" || status === "submitting" || status === "error";
 
   return (
     <div className="relative min-h-screen overflow-hidden text-white">
@@ -177,8 +157,12 @@ export default function ThanksClient({
         <div className="absolute inset-0 bg-black/24" />
       </div>
 
-      <main className="relative mx-auto flex min-h-screen max-w-4xl flex-col gap-10 px-6 pb-24 pt-16">
-        <header className="space-y-4">
+      <main
+        className={`relative mx-auto flex min-h-screen max-w-4xl flex-col px-6 pb-24 pt-16 ${
+          status === "submitted" || status === "skipped" ? "gap-6" : "gap-10"
+        }`}
+      >
+        <header className="space-y-8">
           <p className="text-sm uppercase tracking-[0.35em] text-white/70">
             Thanks
           </p>
@@ -193,35 +177,37 @@ export default function ThanksClient({
         </header>
 
         <section className="rounded-3xl border border-white/12 bg-white/10 px-6 py-8 shadow-[0_24px_60px_rgba(0,0,0,0.3)] backdrop-blur">
-          <div className="flex flex-col gap-3 text-sm text-white/70">
-            {preview && (
-              <p className="text-[#ffd1a1]">
-                プレビュー表示中です。送信は行われません。
+          {showFormIntro && (
+            <div className="flex flex-col gap-3 text-sm text-white/70">
+              {preview && (
+                <p className="text-[#ffd1a1]">
+                  プレビュー表示中です。送信は行われません。
+                </p>
+              )}
+              <p>
+                最後に1分ほどお時間をいただけましたら、皆様のご意見をお聞かせください。
               </p>
-            )}
-            <p>全4問です。ご回答よろしくお願いします！(所要時間1分程度)</p>
-          </div>
+              <p>スキップも可能です。</p>
+            </div>
+          )}
 
           {status === "submitted" || status === "skipped" ? (
-            <div className="mt-8 space-y-5">
-              <div className="rounded-2xl border border-white/15 bg-white/10 px-5 py-6">
-                <h2 className="mt-3 text-xl font-semibold text-white">
+            <div className="mt-4 space-y-5">
+              <div className="space-y-3 rounded-2xl border border-white/15 bg-white/10 px-5 py-6">
+                <h2 className="text-xl font-semibold text-white">
                   {survey.penName
                     ? `${survey.penName}さん、ありがとうございました。`
                     : "ありがとうございました。"}
                 </h2>
                 {status === "submitted" && (
-                  <>
-                    <p className="mt-3 text-sm tracking-[0.25em] text-white/60">
-                      支援タイプ
-                    </p>
-                    <p className="mt-3 text-base leading-7 text-white/80">
-                      {resultMessage}
-                    </p>
-                  </>
+                  <p className="text-base leading-7 text-white/80">
+                    ご支援心から感謝いたします。
+                    <br />
+                    これからも私たちの活動を温かく見守っていただけますと幸いです。
+                  </p>
                 )}
                 {status === "skipped" && (
-                  <p className="mt-3 text-base leading-7 text-white/80">
+                  <p className="text-base leading-7 text-white/80">
                     みなさまのご支援が、活動の大きな励みになります。
                   </p>
                 )}
