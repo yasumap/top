@@ -11,7 +11,11 @@ type FadeInProps = {
 const passages = [
   {
     title: "小さな困りごとから、生まれた地図",
-    body: "ほんの数分だけ腰を下ろしたいのに、場所が見つからない。そんな日常の小さな不便が、気づかれないまま積み重なっていました。やすまっぷは、その見過ごされがちな困りごとに静かに光を当て、必要な人が迷わず一息つけるようにするための地図です。",
+    body: "ほんの数分だけ腰を下ろしたいのに、場所が見つからない。\nそんな日常の小さな不便が、気づかれないまま積み重なっていました。\nやすまっぷは、その見過ごされがちな困りごとに静かに光を当て、必要な人が迷わず一息つけるようにするための地図です。",
+  },
+  {
+    title: "ボタンひとつでかんたん検索",
+    body: "「近くのベンチを探してみる」で現在地から最も近いベンチをお知らせします。\n「地図でベンチを見てみる」で地図上でベンチを探すことができます。",
   },
 ];
 
@@ -28,7 +32,7 @@ const storySegments = [
   "困っている人から対価をもらうのではなく、学生もお年寄りも誰もが気兼ねなく使える「優しさ」の場所であり続けたいと考えています。",
   "その代わり、もしこの活動に「いいな」と共感してくださる方がいたら、無理のない範囲で支えていただけないでしょうか。",
   "皆さんからいただく支援金は、単なる利用料ではありません。",
-  "「次はあそこにベンチを増やそう」「この街をもっと歩きやすくしよう」という、温かい社会を作るための応援のバトンです。",
+  "「困っている誰かのためになりたい」「この街をもっと歩きやすくしよう」という、温かい社会を作るための応援のバトンです。",
   "同じ気持ちである皆さんの温かい応援が、大学生である私たちの活動を続ける大きな理由になります。",
   "誰かがほんの少し笑顔になれる未来を、私たちと一緒に作っていきませんか。",
 ];
@@ -105,25 +109,19 @@ export default function Home() {
         <section className="flex min-h-screen items-center px-6 py-8">
           <div className="relative mx-auto flex max-w-4xl flex-col items-center text-center">
             <div className="mb-5 inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.2em] text-white/80 backdrop-blur">
-              <span>ひとやすみのための地図</span>
-              <span className="h-1 w-1 rounded-full bg-white/60" />
-              <span>やすまっぷ</span>
+              <span>みなさまの応援に支えられている学生プロジェクト</span>
             </div>
 
             <FadeIn>
               <div className="px-7 py-8">
                 <h1 className="text-[clamp(2.1rem,7vw,2.8rem)] leading-[1.25] text-[#fffaf3] drop-shadow-[0_10px_24px_rgba(0,0,0,0.35)] sm:text-5xl md:text-6xl">
-                  <span className="block">みんなにやさしい</span>
-                  <span className="block">ベンチの地図</span>
+                  <span className="block">座れる場所が見つかる</span>
+                  <span className="block">やすまっぷ</span>
                 </h1>
                 <p className="mt-6 max-w-3xl text-[clamp(0.95rem,3.6vw,1.05rem)] leading-8 text-[#fff6eb] drop-shadow-[0_8px_22px_rgba(0,0,0,0.32)] sm:text-xl">
-                  この困りごとは、命に関わるような大きな問題ではないかもしれません。
+                  「小さくて見過ごされがちな困りごと」を、
                   <br className="hidden sm:block" />
-                  だからこそ、ずっと見過ごされ、放置されてきました。
-                  <br className="hidden sm:block" />
-                  私たちは、そんな「小さくて見過ごされがちな困りごと」を、
-                  <br className="hidden sm:block" />
-                  テクノロジーで解決したいと思いました。
+                  テクノロジーで解決したいという思いから生まれました。
                 </p>
               </div>
             </FadeIn>
@@ -138,7 +136,7 @@ export default function Home() {
                   <h2 className="text-xl font-semibold text-white">
                     {item.title}
                   </h2>
-                  <p className="text-base leading-7 text-white/85">
+                  <p className="text-base leading-7 text-white/85 whitespace-pre-line">
                     {item.body}
                   </p>
                 </article>
