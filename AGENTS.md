@@ -292,6 +292,9 @@
   - 残るボタン文言は「地図からベンチを探す」。
 - ボタン説明文は「ページ下部の『地図からベンチを探す』ボタンから〜」のように位置が分かる表現へ。
 - 目立たせ方はカラフル厳禁で、サイズ・余白・コントラスト・位置で強調。
+- 遷移先の整理：
+  - 「応援していただける方はこちら」→ `/thanks/preview`
+  - 「地図からベンチを探す」→ `/coming-soon`
 
 ### Thanks / アンケート（`app/thanks/thanks-client.tsx`）
 - ヒーロー説明文：
@@ -322,3 +325,7 @@
   - これがチャット内に露出したため、**ローテーション推奨**（Supabase側で再発行）。
 - `support_entries` テーブルに `email` カラムが必要（未作成なら追加）。
   - SQL: `alter table support_entries add column if not exists email text;`
+
+### テスト/ビルド状況
+- `npm run lint` は成功。
+- `npm run build` はネットワーク制限でGoogle Fonts取得失敗 → ネットワーク許可で再実行後、成功。
