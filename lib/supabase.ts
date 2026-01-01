@@ -7,6 +7,7 @@ export type SupportEntry = {
   token: string;
   created_at: string;
   answered_at: string | null;
+  email: string | null;
   pen_name: string | null;
   discovery: string | null;
   motive: string | null;
@@ -51,7 +52,7 @@ export async function fetchSupportEntry(
   const headers = getSupabaseRequestInit();
 
   const response = await fetch(
-    `${baseUrl}/rest/v1/support_entries?select=token,created_at,answered_at,pen_name,discovery,motive,impression,note&token=eq.${encodeURIComponent(
+    `${baseUrl}/rest/v1/support_entries?select=token,created_at,answered_at,email,pen_name,discovery,motive,impression,note&token=eq.${encodeURIComponent(
       token
     )}&limit=1`,
     {
@@ -78,7 +79,7 @@ export async function createSupportEntry(
   };
 
   const response = await fetch(
-    `${baseUrl}/rest/v1/support_entries?select=token,created_at,answered_at,pen_name,discovery,motive,impression,note`,
+    `${baseUrl}/rest/v1/support_entries?select=token,created_at,answered_at,email,pen_name,discovery,motive,impression,note`,
     {
       method: "POST",
       headers,
@@ -106,7 +107,7 @@ export async function fetchRecentSupportEntries(
   const safeLimit = Math.max(1, Math.min(limit, 100));
 
   const response = await fetch(
-    `${baseUrl}/rest/v1/support_entries?select=token,created_at,answered_at,pen_name,discovery,motive,impression,note&order=created_at.desc&limit=${safeLimit}`,
+    `${baseUrl}/rest/v1/support_entries?select=token,created_at,answered_at,email,pen_name,discovery,motive,impression,note&order=created_at.desc&limit=${safeLimit}`,
     {
       headers,
       cache: "no-store",

@@ -6,6 +6,7 @@ import { useState } from "react";
 import type { SupportEntry } from "@/lib/supabase";
 
 type SurveyState = {
+  email: string;
   penName: string;
   penNamePrivate: boolean;
   reasons: string[];
@@ -28,7 +29,7 @@ const reasonOptions = [
   "学生の取り組みを応援したいと思った",
   "自分自身もベンチに困った経験があった",
   "コンセプトに共感した",
-  "実際に使って役に立ったから",
+  "実際に使って役に立った",
   "その他",
 ];
 
@@ -40,6 +41,7 @@ const appImpressionOptions = [
 ];
 
 const privacySuffix = "（ペンネーム非公開希望）";
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function ThanksClient({
   token,
@@ -70,6 +72,7 @@ export default function ThanksClient({
     : baseReasons;
 
   const [survey, setSurvey] = useState<SurveyState>({
+    email: entry.email ?? "",
     penName: entry.pen_name ?? "",
     penNamePrivate: noteHasPrivacy,
     reasons: initialReasons,
@@ -82,6 +85,11 @@ export default function ThanksClient({
   );
   const [errorMessage, setErrorMessage] = useState("");
 
+  const trimmedEmail = survey.email.trim();
+  const isEmailValid = emailPattern.test(trimmedEmail);
+  const showEmailFormatError = trimmedEmail.length > 0 && !isEmailValid;
+  const showEmailRequiredError = status === "error" && trimmedEmail.length === 0;
+
   const handleChange = (
     key: keyof SurveyState,
     value: string | boolean
@@ -93,6 +101,16 @@ export default function ThanksClient({
     event.preventDefault();
     if (preview) {
       setStatus("submitted");
+      return;
+    }
+    if (!trimmedEmail) {
+      setErrorMessage("メールアドレスを入力してください。");
+      setStatus("error");
+      return;
+    }
+    if (!isEmailValid) {
+      setErrorMessage("メールアドレスの形式を確認してください。");
+      setStatus("error");
       return;
     }
     setStatus("submitting");
@@ -112,6 +130,7 @@ export default function ThanksClient({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           token,
+          email: trimmedEmail,
           penName: survey.penName,
           reasons: survey.reasons,
           otherReason: survey.otherReason,
@@ -138,7 +157,11 @@ export default function ThanksClient({
     }
   };
 
-  const isComplete = survey.reasons.length > 0 && survey.appImpression;
+  const isComplete =
+    survey.reasons.length > 0 &&
+    survey.appImpression &&
+    trimmedEmail.length > 0 &&
+    isEmailValid;
   const showFormIntro =
     status === "idle" || status === "submitting" || status === "error";
 
@@ -167,12 +190,12 @@ export default function ThanksClient({
             Thanks
           </p>
           <h1 className="text-[clamp(2rem,6vw,3rem)] leading-tight text-[#fffaf3] drop-shadow-[0_10px_24px_rgba(0,0,0,0.35)]">
-            ご支援ありがとうございます
+            ご覧いただきありがとうございます
           </h1>
           <p className="max-w-2xl text-[clamp(1rem,3.4vw,1.1rem)] leading-7 text-white/85 drop-shadow-[0_8px_22px_rgba(0,0,0,0.3)]">
-            やすまっぷの活動は、みなさまからの応援で成り立っています。
+            現在決済機能を実装中です。完成までもうしばらくお待ちください。
             <br />
-            これからの運用をより良くするため、感想をお聞かせいただけると幸いです。
+            今後より良いものにするため、皆様のお声をお聞かせいただけると幸いです。
           </p>
         </header>
 
@@ -201,7 +224,7 @@ export default function ThanksClient({
                 </h2>
                 {status === "submitted" && (
                   <p className="text-base leading-7 text-white/80">
-                    ご支援心から感謝いたします。
+                    ご協力心から感謝いたします。
                     <br />
                     これからも私たちの活動を温かく見守っていただけますと幸いです。
                   </p>
@@ -219,6 +242,10 @@ export default function ThanksClient({
                     回答内容
                   </p>
                   <dl className="mt-4 space-y-3">
+                    <div>
+                      <dt className="text-white/60">メールアドレス</dt>
+                      <dd>{survey.email || "未記入"}</dd>
+                    </div>
                     <div>
                       <dt className="text-white/60">ペンネーム</dt>
                       <dd>{survey.penName || "未記入"}</dd>
@@ -275,15 +302,12 @@ export default function ThanksClient({
             </div>
           ) : (
             <form className="mt-8 space-y-16" onSubmit={handleSubmit}>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <div className="flex flex-wrap items-end gap-3">
                   <label className="text-base font-semibold text-white">
                     ペンネーム
                   </label>
                   <span className="text-xs text-white/60">任意</span>
-                  <span className="ml-auto text-xs text-white/60">
-                    今後のSNS上の活動報告で、ペンネームをご紹介する場合があります。
-                  </span>
                 </div>
                 <input
                   type="text"
@@ -312,10 +336,40 @@ export default function ThanksClient({
                 </label>
               </div>
 
+              <div className="space-y-3">
+                <div className="flex flex-wrap items-end justify-between gap-2">
+                  <label className="text-base font-semibold text-white">
+                    メールアドレス
+                  </label>
+                  <span className="text-xs text-white/60">必須</span>
+                </div>
+                <input
+                  type="email"
+                  required
+                  value={survey.email}
+                  onChange={(event) =>
+                    handleChange("email", event.target.value)
+                  }
+                  placeholder="example@yasumap.jp"
+                  className="w-full rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-base text-white placeholder:text-white/40 focus:border-white/60 focus:outline-none"
+                  aria-invalid={showEmailFormatError || showEmailRequiredError}
+                />
+                {showEmailRequiredError && (
+                  <p className="text-xs text-[#ffd1a1]">
+                    メールアドレスを入力してください。
+                  </p>
+                )}
+                {showEmailFormatError && (
+                  <p className="text-xs text-[#ffd1a1]">
+                    メールアドレスの形式を確認してください。
+                  </p>
+                )}
+              </div>
+
               <div className="space-y-4">
                 <div className="flex flex-wrap items-end justify-between gap-2">
                   <p className="text-base font-semibold text-white">
-                    ご支援いただいた理由（複数回答可）
+                    この活動に共感できる部分（複数回答可）
                   </p>
                   <span className="text-xs text-white/60">必須</span>
                 </div>
@@ -432,7 +486,7 @@ export default function ThanksClient({
                   value={survey.note}
                   onChange={(event) => handleChange("note", event.target.value)}
                   rows={4}
-                  placeholder="例：改善してほしい点や、新たなサービス案など。"
+                  placeholder="例：改善してほしい点、新たなサービス案など"
                   className="w-full resize-none rounded-2xl border border-white/20 bg-white/10 px-4 py-3 text-base text-white placeholder:text-white/40 focus:border-white/60 focus:outline-none"
                 />
               </div>

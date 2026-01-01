@@ -282,3 +282,43 @@
 - LPヒーローの説明文を簡潔化し、2行構成へ調整。
 - ヒーロー上部バッジ文言を「みなさまの応援に支えられている学生プロジェクト」に変更。
 - ストーリーカードを2枚に増やし、1文ずつ改行表示。
+
+---
+
+## 直近の変更・引き継ぎメモ（重要）
+### LP / Top（`app/page.tsx`）
+- CTAボタンは1つに統合。
+  - 「近くのベンチを探してみる」は削除。
+  - 残るボタン文言は「地図からベンチを探す」。
+- ボタン説明文は「ページ下部の『地図からベンチを探す』ボタンから〜」のように位置が分かる表現へ。
+- 目立たせ方はカラフル厳禁で、サイズ・余白・コントラスト・位置で強調。
+
+### Thanks / アンケート（`app/thanks/thanks-client.tsx`）
+- ヒーロー説明文：
+  - 「現在決済機能を実装中です。完成までもうしばらくお待ちください。」
+  - 「今後より良いものにするため、皆様のお声をお聞かせいただけると幸いです。」
+- 送信後メッセージ：
+  - 「ご支援心から感謝いたします。」→「ご協力心から感謝いたします。」
+- アンケート項目名：
+  - 「ご支援いただいた理由」→「この活動に共感できる部分」
+- 選択肢文言：
+  - 「実際に使って役に立ったから」→「実際に使って役に立った」
+- メールアドレスは必須で形式チェックあり。
+  - 入力欄の位置はペンネームの下。
+  - メール欄の縦余白は他より少し狭め（`space-y-2`）。
+
+### Supabase / データ保存
+- サーバー側で `SUPABASE_URL` と `SUPABASE_SERVICE_ROLE_KEY` を使って保存。
+- `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` は現状未使用。
+- 保存先を「組織のSupabaseプロジェクト」に統一したい。
+  - ローカルは `.env.local` に上記2つを設定済み。
+  - **本番（Vercel）では未設定**なので、このままだと組織DBに保存されない。
+- Vercelの設定場所：
+  - Project → Settings → Environment Variables
+  - `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` を追加（Productionにチェック）
+  - 追加後に再デプロイが必要
+  - 画面内の Key / Value 欄にそれぞれ入力し Save（必要なら Add Another）
+- `SUPABASE_SERVICE_ROLE_KEY` は秘密鍵。公開厳禁。
+  - これがチャット内に露出したため、**ローテーション推奨**（Supabase側で再発行）。
+- `support_entries` テーブルに `email` カラムが必要（未作成なら追加）。
+  - SQL: `alter table support_entries add column if not exists email text;`
