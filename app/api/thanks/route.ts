@@ -5,6 +5,7 @@ export async function POST(request: Request) {
   const body = await request.json();
   const {
     token,
+    email,
     penName,
     reasons,
     otherReason,
@@ -12,7 +13,17 @@ export async function POST(request: Request) {
     note,
   } = body ?? {};
 
-  if (!token || !Array.isArray(reasons) || reasons.length === 0 || !appImpression) {
+  const normalizedEmail = typeof email === "string" ? email.trim() : "";
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (
+    !token ||
+    !normalizedEmail ||
+    !emailPattern.test(normalizedEmail) ||
+    !Array.isArray(reasons) ||
+    reasons.length === 0 ||
+    !appImpression
+  ) {
     return NextResponse.json(
       { ok: false, error: "必須項目が不足しています。" },
       { status: 400 }
@@ -46,6 +57,7 @@ export async function POST(request: Request) {
       headers,
       body: JSON.stringify({
         answered_at: new Date().toISOString(),
+        email: normalizedEmail,
         pen_name: typeof penName === "string" ? penName.trim() || null : null,
         discovery: null,
         motive,

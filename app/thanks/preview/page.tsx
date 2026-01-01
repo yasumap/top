@@ -5,6 +5,7 @@ const previewEntry: SupportEntry = {
   token: "preview",
   created_at: new Date().toISOString(),
   answered_at: null,
+  email: "",
   pen_name: "",
   discovery: "",
   motive: "",

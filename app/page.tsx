@@ -15,7 +15,7 @@ const passages = [
   },
   {
     title: "ボタンひとつでかんたん検索",
-    body: "「近くのベンチを探してみる」で現在地から最も近いベンチをお知らせします。\n「地図でベンチを見てみる」で地図上でベンチを探すことができます。",
+    body: "ページ下部の「地図からベンチを探す」ボタンから、地図上でベンチを探すことができます。",
   },
 ];
 
@@ -39,11 +39,7 @@ const storySegments = [
 
 const quickActions = [
   {
-    label: "近くのベンチを探してみる",
-    href: "/coming-soon",
-  },
-  {
-    label: "地図でベンチを見てみる",
+    label: "地図からベンチを探す",
     href: "/coming-soon",
   },
 ];
@@ -158,7 +154,7 @@ export default function Home() {
         <section className="relative z-10 px-6 pb-20">
           <div className="mx-auto flex max-w-3xl justify-center">
             <a
-              href="/coming-soon"
+              href="/thanks/preview"
               title="Coming Soon"
               className="group inline-flex w-full items-center justify-center gap-3 rounded-full border border-white/20 bg-white/12 px-6 py-4 text-base font-semibold text-[#fff6eb] shadow-[0_18px_45px_rgba(0,0,0,0.28)] backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/18 hover:shadow-[0_24px_55px_rgba(0,0,0,0.32)] active:translate-y-0 active:shadow-[0_12px_30px_rgba(0,0,0,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd1a1] focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 sm:w-auto"
             >
@@ -174,20 +170,22 @@ export default function Home() {
               <span className="font-semibold text-white">やすまっぷ</span>
             </div>
             <div className="text-right leading-tight">
-              <p className="text-white/65">現在開発中・準備中</p>
+              <p className="text-white/65">
+                座れる場所がわかる、ほっとひと息マップ
+              </p>
             </div>
           </div>
         </footer>
       </main>
 
       <div className="fixed inset-x-0 bottom-4 z-30 px-4 sm:bottom-6 sm:px-6">
-        <div className="mx-auto flex max-w-3xl flex-col gap-3 sm:flex-row sm:justify-center">
+        <div className="mx-auto flex max-w-3xl flex-col items-center gap-3 sm:flex-row sm:justify-center">
           {quickActions.map((action) => (
             <a
               key={action.label}
               href={action.href}
               title="Coming Soon"
-              className="group inline-flex items-center justify-center gap-2 rounded-full border border-white/25 bg-white/85 px-5 py-3 text-sm font-semibold text-[#6b4b3a] shadow-[0_16px_36px_rgba(0,0,0,0.25)] backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_20px_44px_rgba(0,0,0,0.3)] active:translate-y-0 active:shadow-[0_10px_24px_rgba(0,0,0,0.2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd1a1] focus-visible:ring-offset-2 focus-visible:ring-offset-black/40"
+              className="group inline-flex w-full items-center justify-center gap-2 rounded-full border border-white/40 bg-white/90 px-7 py-4 text-base font-semibold text-[#6b4b3a] shadow-[0_22px_50px_rgba(0,0,0,0.32)] backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-[0_26px_60px_rgba(0,0,0,0.36)] active:translate-y-0 active:shadow-[0_14px_32px_rgba(0,0,0,0.22)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd1a1] focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 sm:w-auto"
             >
               {action.label}
             </a>
