@@ -1,6 +1,29 @@
 import { NextResponse } from "next/server";
 import { getSupabaseBaseUrl, getSupabaseRequestInit } from "@/lib/supabase";
 
+type SupabaseJwtPayload = {
+  role?: string;
+  [key: string]: unknown;
+};
+
+function readSupabaseRole(token?: string) {
+  if (!token) {
+    return null;
+  }
+  const parts = token.split(".");
+  if (parts.length < 2) {
+    return null;
+  }
+  const payload = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+  try {
+    const decoded = Buffer.from(payload, "base64").toString("utf8");
+    const data = JSON.parse(decoded) as SupabaseJwtPayload;
+    return data.role ?? null;
+  } catch {
+    return null;
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -50,6 +73,10 @@ export async function POST(request: Request) {
     let headers: Record<string, string>;
     try {
       baseUrl = getSupabaseBaseUrl();
+      const detectedRole = readSupabaseRole(
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+      );
+      console.log("Supabase role:", detectedRole ?? "unknown");
       headers = {
         ...getSupabaseRequestInit(),
         Prefer: "return=representation",
