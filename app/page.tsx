@@ -154,7 +154,7 @@ export default function Home() {
         <section className="relative z-10 px-6 pb-20">
           <div className="mx-auto flex max-w-3xl justify-center">
             <a
-              href="/thanks/preview"
+              href="/thanks"
               title="Coming Soon"
               className="group inline-flex w-full items-center justify-center gap-3 rounded-full border border-white/20 bg-white/12 px-6 py-4 text-base font-semibold text-[#fff6eb] shadow-[0_18px_45px_rgba(0,0,0,0.28)] backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:bg-white/18 hover:shadow-[0_24px_55px_rgba(0,0,0,0.32)] active:translate-y-0 active:shadow-[0_12px_30px_rgba(0,0,0,0.25)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#ffd1a1] focus-visible:ring-offset-2 focus-visible:ring-offset-black/40 sm:w-auto"
             >
