@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import type { SupportEntry } from "@/lib/supabase";
 
 type SurveyState = {
   email: string;
@@ -18,8 +17,6 @@ type SurveyState = {
 type SubmitState = "idle" | "submitting" | "submitted" | "skipped" | "error";
 
 type ThanksClientProps = {
-  token: string;
-  entry: SupportEntry;
   preview?: boolean;
   previewDone?: boolean;
 };
@@ -40,48 +37,23 @@ const appImpressionOptions = [
   "使っていない",
 ];
 
-const privacySuffix = "（ペンネーム非公開希望）";
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export default function ThanksClient({
-  token,
-  entry,
   preview = false,
   previewDone = false,
 }: ThanksClientProps) {
-  const isLocked = Boolean(entry.answered_at);
-  const rawNote = entry.note ?? "";
-  const noteHasPrivacy = rawNote.includes(privacySuffix);
-  const cleanedNote = rawNote.replace(new RegExp(`\\n?${privacySuffix}$`), "");
-  const normalizedNote = cleanedNote.trim();
-  const parsedReasons = (entry.motive ?? "")
-    .split(" / ")
-    .map((item) => item.trim())
-    .filter(Boolean);
-  const otherReasonItem = parsedReasons.find((item) =>
-    item.startsWith("その他:")
-  );
-  const otherReason = otherReasonItem
-    ? otherReasonItem.replace(/^その他:\s*/, "")
-    : "";
-  const baseReasons = parsedReasons.filter(
-    (item) => !item.startsWith("その他:")
-  );
-  const initialReasons = otherReason
-    ? Array.from(new Set([...baseReasons, "その他"]))
-    : baseReasons;
-
   const [survey, setSurvey] = useState<SurveyState>({
-    email: entry.email ?? "",
-    penName: entry.pen_name ?? "",
-    penNamePrivate: noteHasPrivacy,
-    reasons: initialReasons,
-    otherReason,
-    appImpression: entry.impression ?? "",
-    note: normalizedNote,
+    email: "",
+    penName: "",
+    penNamePrivate: false,
+    reasons: [],
+    otherReason: "",
+    appImpression: "",
+    note: "",
   });
   const [status, setStatus] = useState<SubmitState>(
-    previewDone ? "submitted" : isLocked ? "submitted" : "idle"
+    previewDone ? "submitted" : "idle"
   );
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -117,25 +89,17 @@ export default function ThanksClient({
     setErrorMessage("");
 
     try {
-      const baseNote =
-        typeof survey.note === "string" ? survey.note.trim() : "";
-      const noteWithPreference = survey.penNamePrivate
-        ? baseNote
-          ? `${baseNote}\n${privacySuffix}`
-          : privacySuffix
-        : baseNote;
-
       const response = await fetch("/api/thanks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          token,
           email: trimmedEmail,
           penName: survey.penName,
+          penNamePublic: !survey.penNamePrivate,
           reasons: survey.reasons,
           otherReason: survey.otherReason,
           appImpression: survey.appImpression,
-          note: noteWithPreference,
+          note: survey.note,
         }),
       });
 
@@ -236,16 +200,12 @@ export default function ThanksClient({
                 )}
               </div>
 
-              {(status === "submitted" || isLocked) && (
+              {status === "submitted" && (
                 <div className="rounded-2xl border border-white/10 bg-white/5 px-5 py-6 text-sm text-white/80">
                   <p className="text-xs uppercase tracking-[0.2em] text-white/60">
                     回答内容
                   </p>
                   <dl className="mt-4 space-y-3">
-                    <div>
-                      <dt className="text-white/60">メールアドレス</dt>
-                      <dd>{survey.email || "未記入"}</dd>
-                    </div>
                     <div>
                       <dt className="text-white/60">ペンネーム</dt>
                       <dd>{survey.penName || "未記入"}</dd>
@@ -257,7 +217,11 @@ export default function ThanksClient({
                       </dd>
                     </div>
                     <div>
-                      <dt className="text-white/60">支援理由</dt>
+                      <dt className="text-white/60">メールアドレス</dt>
+                      <dd>{survey.email || "未記入"}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-white/60">共感したところ</dt>
                       <dd>
                         {survey.reasons.length > 0
                           ? survey.reasons
@@ -289,7 +253,7 @@ export default function ThanksClient({
                 >
                   トップへ戻る
                 </Link>
-                {status === "skipped" && !isLocked && (
+                {status === "skipped" && (
                   <button
                     type="button"
                     className="inline-flex items-center justify-center rounded-full border border-white/30 bg-white/5 px-5 py-2 text-sm font-semibold text-white/80 transition hover:bg-white/10"
