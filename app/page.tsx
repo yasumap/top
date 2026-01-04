@@ -40,7 +40,7 @@ const storySegments = [
 const quickActions = [
   {
     label: "地図からベンチを探す",
-    href: "/coming-soon",
+    href: "https://yasumappu.vercel.app",
   },
 ];
 
