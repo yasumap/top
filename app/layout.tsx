@@ -19,13 +19,11 @@ const zenMaru = Zen_Maru_Gothic({
 });
 
 export const metadata: Metadata = {
-  title: "やすまっぷ｜座れる場所がわかる、ほっとひと息マップ",
-  description:
-    "街中のベンチや座れる場所を、今いる場所からすぐに探せるマップサービスです。お金をかけずに一息つける場所を見つけられます。",
+  title: "やすまっぷ｜最寄りのベンチがすぐ見つかる",
+  description: "近くのベンチが、今すぐ見つかる地図です。",
   openGraph: {
-    title: "やすまっぷ｜座れる場所がわかる、ほっとひと息マップ",
-    description:
-      "街中のベンチや座れる場所を、今いる場所からすぐに探せるマップサービスです。お金をかけずに一息つける場所を見つけられます。",
+    title: "やすまっぷ｜最寄りのベンチがすぐ見つかる",
+    description: "近くのベンチが、今すぐ見つかる地図です。",
     type: "website",
     locale: "ja_JP",
   },
