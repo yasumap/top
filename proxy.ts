@@ -31,7 +31,7 @@ function isAuthorized(request: NextRequest): boolean {
   return providedUser === username && providedPass === password;
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   if (isAuthorized(request)) {
     return NextResponse.next();
   }
