@@ -43,7 +43,7 @@ export default function Home() {
 
           <div className="mt-10 w-full max-w-md">
             <a
-              href="/coming-soon"
+              href="https://yasumappu.vercel.app/"
               aria-label="近くのベンチを探す"
               className="inline-flex w-full items-center justify-center rounded-full border border-[#1f4f78] bg-gradient-to-br from-[#4b86c6] via-[#2c6aa7] to-[#1f4f78] px-8 py-5 text-lg font-semibold text-white shadow-[0_20px_44px_rgba(10,40,80,0.28)] transition-transform duration-200 ease-out hover:-translate-y-0.5 hover:shadow-[0_24px_52px_rgba(10,40,80,0.35)] active:translate-y-0 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1f4f78] focus-visible:ring-offset-2 focus-visible:ring-offset-white/60"
             >
