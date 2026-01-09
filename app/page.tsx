@@ -63,19 +63,21 @@ export default function Home() {
                 <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0b1f2a] text-sm font-semibold text-white">
                   1
                 </span>
-                <p>ボタンを押して現在地を許可します。</p>
+                <p>
+                  「近くのベンチを探す」ボタンを押すと地図が開き、最寄りのベンチが表示されます。
+                </p>
               </li>
               <li className="flex gap-3">
                 <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0b1f2a] text-sm font-semibold text-white">
                   2
                 </span>
-                <p>地図が開き、最寄りのベンチがピンで表示されます。</p>
+                <p>右下の📍ボタンを押すと、次に近いベンチが5番目まで順に表示されます。</p>
               </li>
               <li className="flex gap-3">
                 <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0b1f2a] text-sm font-semibold text-white">
                   3
                 </span>
-                <p>「最寄りのベンチが見つかりました」と表示されます。</p>
+                <p>＋ボタンからベンチがあった報告ができます。</p>
               </li>
             </ol>
           </div>
