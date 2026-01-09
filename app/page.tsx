@@ -77,7 +77,7 @@ export default function Home() {
                 <span className="mt-0.5 flex h-7 w-7 flex-none items-center justify-center rounded-full bg-[#0b1f2a] text-sm font-semibold text-white">
                   3
                 </span>
-                <p>＋ボタンからベンチがあった報告ができます。</p>
+                <p>＋ボタンからベンチの登録ができます。</p>
               </li>
             </ol>
           </div>
