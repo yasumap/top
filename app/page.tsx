@@ -59,22 +59,22 @@ export default function Home() {
               使い方
             </h2>
             <ol className="space-y-4 text-base leading-7 text-[#0b1520]/80">
-              <li className="flex gap-3">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0b1f2a] text-sm font-semibold text-white">
+              <li className="flex items-start gap-3">
+                <span className="mt-0.5 flex h-7 w-7 flex-none items-center justify-center rounded-full bg-[#0b1f2a] text-sm font-semibold text-white">
                   1
                 </span>
                 <p>
                   「近くのベンチを探す」ボタンを押すと地図が開き、最寄りのベンチが表示されます。
                 </p>
               </li>
-              <li className="flex gap-3">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0b1f2a] text-sm font-semibold text-white">
+              <li className="flex items-start gap-3">
+                <span className="mt-0.5 flex h-7 w-7 flex-none items-center justify-center rounded-full bg-[#0b1f2a] text-sm font-semibold text-white">
                   2
                 </span>
                 <p>右下の📍ボタンを押すと、次に近いベンチが5番目まで順に表示されます。</p>
               </li>
-              <li className="flex gap-3">
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#0b1f2a] text-sm font-semibold text-white">
+              <li className="flex items-start gap-3">
+                <span className="mt-0.5 flex h-7 w-7 flex-none items-center justify-center rounded-full bg-[#0b1f2a] text-sm font-semibold text-white">
                   3
                 </span>
                 <p>＋ボタンからベンチがあった報告ができます。</p>
